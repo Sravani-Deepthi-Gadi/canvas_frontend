@@ -2,45 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>Collaborative Canvas</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
-    <header>
-      <h1>Collaborative Canvas</h1>
-      <div id="roomControls">
-        <input id="roomId" placeholder="Room ID (optional)" />
-        <button id="joinBtn">Join Room</button>
-        <span id="status"></span>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Collaborative Canvas</h1>
+        <small class="subtitle">Real-time multi-user drawing (Vanilla JS + Socket.IO)</small>
+      </div>
+
+      <div class="room-controls">
+        <label class="room-label">
+          Room
+          <input id="roomId" placeholder="Room ID (optional)" />
+        </label>
+        <button id="joinBtn" class="btn primary">Join Room</button>
+        <div class="status-wrap">
+          <span id="status" class="status">Disconnected</span>
+          <div class="users-pill">Users: <span id="usersCount">0</span></div>
+        </div>
       </div>
     </header>
 
-    <main>
-      <aside class="toolbar">
-        <label>Tool:
-          <select id="toolSelect">
-            <option value="brush">Brush</option>
-            <option value="eraser">Eraser</option>
-          </select>
-        </label>
-        <label>Color: <input type="color" id="colorPicker" value="#000000"></label>
-        <label>Size: <input type="range" id="sizeRange" min="1" max="40" value="4"></label>
-        <button id="undoBtn">Undo</button>
-        <button id="redoBtn">Redo</button>
-        <button id="clearBtn">Clear Room</button>
-        <div id="usersList">Users: <span id="usersCount">0</span></div>
+    <main class="main-area">
+      <aside class="toolbar" role="toolbar" aria-label="Drawing tools">
+        <div class="tool-group">
+          <label class="field">
+            Tool
+            <select id="toolSelect" class="select">
+              <option value="brush">Brush</option>
+              <option value="eraser">Eraser</option>
+            </select>
+          </label>
+
+          <label class="field color-field">
+            Color
+            <input type="color" id="colorPicker" value="#000000" />
+          </label>
+
+          <label class="field">
+            Size
+            <input type="range" id="sizeRange" min="1" max="40" value="4" />
+          </label>
+        </div>
+
+        <div class="action-group">
+          <button id="undoBtn" class="btn">Undo</button>
+          <button id="redoBtn" class="btn">Redo</button>
+          <button id="clearBtn" class="btn danger">Clear Room</button>
+        </div>
+
+        <div class="info-group">
+          <div id="usersList">Connected: <strong id="usersCountLabel">0</strong></div>
+          <small class="hint">Tip: Open the same room in two tabs to test.</small>
+        </div>
       </aside>
 
-      <section class="canvasWrap">
-        <canvas id="drawCanvas"></canvas>
-        <div id="cursors"></div>
+      <section class="canvas-wrap">
+        <div class="canvas-stage">
+          <canvas id="drawCanvas" aria-label="Drawing canvas"></canvas>
+          <div id="cursors" class="cursors"></div>
+        </div>
+        <div class="footer-controls">
+          <div class="legend">Brush · Eraser · Undo/Redo · Rooms</div>
+          <div class="links">
+            <a href="#" id="open-demo" class="link">Open Demo</a>
+          </div>
+        </div>
       </section>
     </main>
 
-    <footer>
-      <small>Vanilla JS canvas + socket.io — Starter</small>
+    <footer class="footer">
+      <small>Vanilla JS Canvas + Socket.IO — Starter</small>
     </footer>
   </div>
 

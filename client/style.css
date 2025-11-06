@@ -1,11 +1,132 @@
+/* style.css — modern responsive UI for Collaborative Canvas */
+
+/* Base reset */
+:root{
+  --bg:#f6f8fa;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --danger:#ef4444;
+  --shadow: 0 6px 18px rgba(12, 18, 25, 0.08);
+  --radius:12px;
+  --glass: rgba(255,255,255,0.7);
+  --max-width:1200px;
+  --toolbar-width:320px;
+}
 *{box-sizing:border-box}
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f4f4f7}
-#app header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#fff;border-bottom:1px solid #e5e7eb}
-#app main{display:flex;height:calc(100vh - 120px)}
-.toolbar{width:240px;padding:12px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;gap:8px}
-.toolbar label{font-size:14px}
-.canvasWrap{flex:1;position:relative;background:#fff;display:flex;align-items:stretch;overflow:hidden}
-#drawCanvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
-#cursors{position:absolute;left:0;top:0;pointer-events:none}
-.cursor{position:absolute;transform:translate(-50%,-50%);padding:2px 6px;border-radius:12px;background:rgba(0,0,0,0.7);color:#fff;font-size:12px}
-footer{padding:10px;text-align:center}
+html,body,#app{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+body{background:linear-gradient(180deg,#f4f6fb 0%,var(--bg) 100%);color:#111827;}
+
+/* Topbar */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 24px;
+  background:var(--card);
+  box-shadow:var(--shadow);
+  border-radius:0 0 12px 12px;
+  max-width:var(--max-width);
+  margin:18px auto 12px;
+  width:calc(100% - 48px);
+}
+.brand h1{margin:0;font-size:20px;letter-spacing:-0.2px}
+.brand .subtitle{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+
+/* Room controls */
+.room-controls{display:flex;align-items:center;gap:12px}
+.room-label input{width:160px;padding:8px 10px;border-radius:8px;border:1px solid #e6e9ef;background:transparent}
+.status-wrap{display:flex;align-items:center;gap:10px}
+.status{font-size:13px;color:var(--muted)}
+.users-pill{background:linear-gradient(90deg,#eef2ff,#f8fafc);padding:6px 10px;border-radius:18px;font-size:13px;color:#0f172a;border:1px solid #eef2ff}
+
+/* Main layout */
+.main-area{
+  display:flex;
+  gap:18px;
+  max-width:var(--max-width);
+  margin:0 auto;
+  padding:6px 18px 80px;
+  width:calc(100% - 36px);
+}
+
+/* Toolbar */
+.toolbar{
+  width:var(--toolbar-width);
+  min-width:220px;
+  background:var(--card);
+  padding:16px;
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-self:flex-start;
+  height:calc(100vh - 220px);
+  position:sticky;
+  top:110px;
+}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#111827}
+.field input[type="color"]{width:40px;height:36px;padding:0;border:none;background:none}
+.field input[type="range"]{width:100%}
+.select{padding:8px;border-radius:8px;border:1px solid #e6e9ef}
+.tool-group{display:flex;flex-direction:column;gap:12px}
+.action-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 12px;border-radius:8px;border:1px solid #e6e9ef;background:transparent;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.btn.danger{background:var(--danger);color:#fff;border-color:transparent}
+.info-group .hint{color:var(--muted);font-size:12px;margin-top:8px}
+
+/* Canvas area */
+.canvas-wrap{flex:1;display:flex;flex-direction:column;gap:12px}
+.canvas-stage{
+  background:linear-gradient(180deg,#ffffff,#fbfdff);
+  border-radius:12px;
+  padding:12px;
+  box-shadow:var(--shadow);
+  min-height:480px;
+  height:calc(100vh - 260px);
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+canvas{width:100%;height:100%;touch-action:none;display:block;border-radius:8px;background:white;}
+
+/* cursors overlay */
+.cursors{position:absolute;left:12px;top:12px;right:12px;bottom:12px;pointer-events:none;}
+.cursor{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  padding:6px 8px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.7);
+  color:white;font-size:12px;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* Footer controls under canvas */
+.footer-controls{display:flex;justify-content:space-between;align-items:center;padding:0 4px 0}
+.legend{color:var(--muted);font-size:13px}
+.links .link{color:var(--accent);text-decoration:none;font-weight:600}
+
+/* Footer */
+.footer{max-width:var(--max-width);margin:10px auto 40px;text-align:center;color:var(--muted)}
+
+/* Responsive rules */
+@media (max-width: 980px){
+  .main-area{flex-direction:column;padding:10px}
+  .toolbar{position:relative;width:100%;height:auto;top:unset;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:12px}
+  .canvas-stage{height:60vh;min-height:360px}
+  .brand h1{font-size:18px}
+  .room-label input{width:120px}
+}
+
+/* make controls touch friendly */
+@media (pointer: coarse){
+  .btn{padding:12px 14px}
+  .tool-group{flex-direction:row;gap:8px;align-items:center}
+  .field{min-width:0}
+}
