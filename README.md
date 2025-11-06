@@ -3,7 +3,7 @@
 # Real-Time Collaborative Drawing Canvas
 
 A **multi-user real-time drawing application** built with **Vanilla JavaScript**, **HTML5 Canvas**, and **Node.js + Socket.IO**.
-Multiple users can draw simultaneously on the same canvas, see each other’s strokes live, and interact with shared tools ,all without using any frontend frameworks.
+Multiple users can draw simultaneously on the same canvas, see each other’s strokes live, and interact with shared tools all without using any frontend frameworks.
 
 ---
 
@@ -120,7 +120,7 @@ http://localhost:3000
 
 1. Open `http://localhost:3000` in **two browser tabs** (or on two devices).
 2. Click **Join Room** on both, using the same Room ID or leaving it blank.
-3. Draw in one window — strokes appear in the other in real time.
+3. Draw in one window : strokes appear in the other in real time.
 4. Try **Undo**, **Redo**, **Clear Room**, and **Eraser** tools.
 
 ---
