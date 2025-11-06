@@ -1,6 +1,6 @@
 // server/drawing-state.js
 // Central in-memory structure for a room's drawing state.
-// Now includes per-user undo/redo stacks and tombstones.
+//  includes per-user undo/redo stacks and tombstones.
 
 function create() {
   return {

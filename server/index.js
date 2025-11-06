@@ -1,4 +1,4 @@
-// server/index.js (updated)
+// server/index.js 
 // Node + Express + Socket.IO server with per-user undo/redo and file persistence
 
 const express = require('express');

@@ -1,12 +1,12 @@
-// main.js — UI glue (updated with noop handling and undo/redo button state)
+// main.js — UI glue ( noop handling and undo/redo button state)
 (function () {
-  // Server URL for socket.io (use same origin if served)
+  // Server URL for socket.io 
   const serverUrl = (location.protocol && location.host) ? `${location.protocol}//${location.host}` : 'http://localhost:3000';
 
   const canvasEl = document.getElementById('drawCanvas');
   const cursorsEl = document.getElementById('cursors');
 
-  const socketWrapper = WS; // from websocket.js
+  const socketWrapper = WS; // websocket.js
   let socket = null;
   let app = null;
 
