@@ -1,6 +1,4 @@
-Got it 👍 — here’s your **final clean README.md version without emojis or stylistic symbols**, perfectly formatted for GitHub and ready to commit:
 
----
 
 # Real-Time Collaborative Drawing Canvas
 
