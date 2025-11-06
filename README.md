@@ -1,64 +1,271 @@
-# Real-Time Collaborative Drawing Canvas
-
-## Quick start
-
-1. Install:
-```bash
-npm install
-Start server (serves client):
-
-npm start
-
-
-Open browser:
-
-http://localhost:3000
-
-
-Click "Join Room" (use same room id in multiple tabs to test).
-
-Notes / Limitations
-
-Undo uses a tombstone approach: undo last op by the user (server attribute meta.origin required).
-
-Redo is not fully implemented in this starter.
-
-History stored in memory — add DB for persistence.
-
+Got it 👍 — here’s your **final clean README.md version without emojis or stylistic symbols**, perfectly formatted for GitHub and ready to commit:
 
 ---
 
-## 11) `ARCHITECTURE.md` (short)
-```md
-# Architecture Overview
+# Real-Time Collaborative Drawing Canvas
 
-## Flow
-- Client collects pointer points -> emits op-partial for preview and op at stroke end.
-- Server stores ops per-room and broadcasts ops to room members.
-- Undo uses tombstones: server appends tombstone referencing op id; clients request full-state and replay skipping tombstoned ops.
+A **multi-user real-time drawing application** built with **Vanilla JavaScript**, **HTML5 Canvas**, and **Node.js + Socket.IO**.
+Multiple users can draw simultaneously on the same canvas, see each other’s strokes live, and interact with shared tools — all without using any frontend frameworks.
 
-## Protocol (WebSocket messages)
-- `join-room` { roomId, meta }
-- `full-state` { ops, tombstones }
-- `op-partial` { partial }
-- `op` { id, type, points?, meta? }
-- `cursor` { x, y }
-- `undo`, `redo`
+---
 
-## Undo/Redo
-- Undo: last op by this user's origin is tombstoned.
-- Redo: not implemented in starter; needs per-user undo stacks or tombstone toggle.
+## Features
 
-## Performance
-- Client throttles partial emits.
-- For production persist ops and serve snapshots instead of replaying long op lists.
+### Core Drawing Tools
 
-How to run locally (recap)
+* Brush and Eraser tools
+* Adjustable stroke width
+* Color picker for custom colors
+* Canvas clearing for all users
 
-From project root:
+### Real-Time Synchronization
 
+* Drawings appear instantly across all connected clients
+* Smooth, low-latency synchronization via Socket.IO
+* Live cursor indicators for connected users
+* Room-based collaboration (isolated canvases per room)
+
+### Global Actions
+
+* Undo (using global tombstone-based undo logic)
+* Redo (request-based refresh for now)
+* Clear Room (wipes canvas for all users)
+
+### User Management
+
+* Shows the number of connected users
+* Each user assigned a random color and name (e.g., `Guest-123`)
+* Supports multiple rooms (via Room ID input)
+
+---
+
+## Tech Stack
+
+| Layer         | Technology                                               |
+| ------------- | -------------------------------------------------------- |
+| Frontend      | HTML5, CSS3, Vanilla JavaScript                          |
+| Canvas        | HTML Canvas API                                          |
+| Real-time     | WebSockets (Socket.IO)                                   |
+| Backend       | Node.js + Express                                        |
+| Communication | Event-driven (Socket.IO events)                          |
+| Deployment    | Render (backend) / Vercel or Netlify (optional frontend) |
+
+---
+
+## Project Structure
+
+```
+collaborative-canvas/
+├── client/
+│   ├── index.html          # Frontend UI
+│   ├── style.css           # Styles
+│   ├── websocket.js        # Socket.IO client setup
+│   ├── canvas.js           # Canvas drawing logic
+│   └── main.js             # UI event handling
+├── server/
+│   ├── index.js            # Express + Socket.IO server
+│   ├── rooms.js            # Room management
+│   ├── drawing-state.js    # Canvas operation history
+│   └── persistence.js      # File-based persistence (room state)
+├── data/
+│   ├── default.json        # Saved room data
+│   └── demo.mp4            # Demo video
+├── docs/
+│   └── demo.png            # Screenshot for README
+├── package.json
+├── README.md
+└── ARCHITECTURE.md
+```
+
+---
+
+## Installation & Running Locally
+
+### Prerequisites
+
+Ensure you have **Node.js ≥ 16** installed:
+
+```bash
+node -v
+npm -v
+```
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Sravani-Deepthi-Gadi/canvas_frontend.git
+cd canvas_frontend
+
+# Install dependencies
+npm install
+
+# Start the server
+npm start
+```
+
+You should see:
+
+```
+ Server running on http://localhost:3000
+```
+
+Then open the following in your browser:
+
+```
+http://localhost:3000
+```
+
+---
+
+## Testing Collaboration
+
+1. Open `http://localhost:3000` in **two browser tabs** (or on two devices).
+2. Click **Join Room** on both, using the same Room ID or leaving it blank.
+3. Draw in one window — strokes appear in the other in real time.
+4. Try **Undo**, **Redo**, **Clear Room**, and **Eraser** tools.
+
+---
+
+## How It Works
+
+### Client-Side
+
+* Captures mouse/touch movement on the canvas.
+* Emits small stroke segments (`op-partial`) for smooth real-time updates.
+* Sends a final stroke operation (`op`) once the drawing is complete.
+* Reconstructs the canvas by replaying all non-tombstoned operations.
+
+### Server-Side
+
+* Manages rooms and connected users.
+* Broadcasts drawing operations to all clients in the room.
+* Maintains in-memory lists of all strokes and tombstones.
+* Handles Undo by creating a tombstone operation for the last stroke by a user.
+* Optionally persists room state to `/data/<room>.json`.
+
+---
+
+## Live Demo
+
+**Render Deployment:**
+[https://canvas-frontend-u8jd.onrender.com/](https://canvas-frontend-u8jd.onrender.com/)
+*(Note: Render free-tier may take 30–40 seconds to wake from idle.)*
+
+---
+
+## Demo Video
+
+Watch the application in action:
+
+<video width="600" controls>
+  <source src="data/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+Or [download the demo video](data/demo.mp4).
+
+---
+
+## Architecture Summary
+
+### Client
+
+Files: `client/index.html`, `client/canvas.js`, `client/websocket.js`, `client/main.js`
+
+* Collects pointer points, emits `op-partial` and `op`.
+* Maintains a local render cache and tombstone set for replay.
+
+### Server
+
+Files: `server/index.js`, `server/rooms.js`, `server/drawing-state.js`, `server/persistence.js`
+
+* Stores ordered ops, tombstones, and per-user undo/redo stacks.
+* Emits `op`, `full-state`, handles `undo` and `redo`.
+* Saves room state to `data/<room>.json` after updates.
+
+### Protocol Examples
+
+```json
+// Stroke operation
+{
+  "id": "op_...",
+  "type": "stroke",
+  "points": [...],
+  "meta": { "tool": "brush", "color": "#000", "size": 4, "origin": "socketId" },
+  "createdAt": 1700000000000
+}
+
+// Tombstone (undo)
+{
+  "id": "tomb_...",
+  "type": "tombstone",
+  "targetId": "op_...",
+  "createdAt": 1700000100000
+}
+
+// Untombstone (redo)
+{
+  "id": "untomb_...",
+  "type": "untombstone",
+  "targetId": "op_...",
+  "createdAt": 1700000200000
+}
+```
+
+---
+
+## Testing Checklist
+
+* [x] `npm install && npm start`
+* [x] Open `http://localhost:3000` in two tabs
+* [x] Join same room → strokes sync instantly
+* [x] Undo → stroke disappears globally
+* [x] Redo → stroke restored
+* [x] Clear Room → all canvases cleared
+* [x] Restart server → rejoin room → previous ops replayed
+
+---
+
+## Known Limitations
+
+* In-memory replay may slow for very large histories — snapshots recommended.
+* File-based persistence for demo only (use MongoDB/Redis in production).
+* No authentication — all rooms are public (can be extended easily).
+
+---
+
+## Deployment
+
+Deployed as a single **Render Web Service** (serves both frontend and backend).
+
+**Build and Run Commands:**
+
+```bash
 npm install
 npm start
+```
+
+---
+
+## Development Notes
+
+* All drawing logic uses raw **Canvas API** — no external libraries.
+* Partial stroke events throttled (~40ms).
+* Canvas scaled to device pixel ratio for crisp rendering.
+
+---
+
+## Time Spent
+
+Approximately **12–16 hours** (development, testing, documentation, and deployment).
+
+---
+
+## License
+
+**MIT License** — feel free to reuse and extend for learning or demo purposes.
+
+---
 
 
-Open http://localhost:3000 in two tabs, click Join Room with same Room ID to see real-time drawing sync.
