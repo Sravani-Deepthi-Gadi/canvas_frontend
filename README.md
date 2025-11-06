@@ -3,7 +3,7 @@
 # Real-Time Collaborative Drawing Canvas
 
 A **multi-user real-time drawing application** built with **Vanilla JavaScript**, **HTML5 Canvas**, and **Node.js + Socket.IO**.
-Multiple users can draw simultaneously on the same canvas, see each other’s strokes live, and interact with shared tools — all without using any frontend frameworks.
+Multiple users can draw simultaneously on the same canvas, see each other’s strokes live, and interact with shared tools ,all without using any frontend frameworks.
 
 ---
 
