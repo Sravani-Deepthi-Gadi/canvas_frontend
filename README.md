@@ -154,7 +154,8 @@ http://localhost:3000
 
 ---
 
-## Demo Video
+## Demo Video:
+https://github.com/user-attachments/assets/0722a660-949b-4571-8574-e1b0f998126e
 
 Watch the application in action:
 
