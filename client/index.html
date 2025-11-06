@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Collaborative Canvas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Collaborative Canvas</h1>
+      <div id="roomControls">
+        <input id="roomId" placeholder="Room ID (optional)" />
+        <button id="joinBtn">Join Room</button>
+        <span id="status"></span>
+      </div>
+    </header>
+
+    <main>
+      <aside class="toolbar">
+        <label>Tool:
+          <select id="toolSelect">
+            <option value="brush">Brush</option>
+            <option value="eraser">Eraser</option>
+          </select>
+        </label>
+        <label>Color: <input type="color" id="colorPicker" value="#000000"></label>
+        <label>Size: <input type="range" id="sizeRange" min="1" max="40" value="4"></label>
+        <button id="undoBtn">Undo</button>
+        <button id="redoBtn">Redo</button>
+        <button id="clearBtn">Clear Room</button>
+        <div id="usersList">Users: <span id="usersCount">0</span></div>
+      </aside>
+
+      <section class="canvasWrap">
+        <canvas id="drawCanvas"></canvas>
+        <div id="cursors"></div>
+      </section>
+    </main>
+
+    <footer>
+      <small>Vanilla JS canvas + socket.io — Starter</small>
+    </footer>
+  </div>
+
+  <!-- socket.io client -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="websocket.js"></script>
+  <script src="canvas.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
