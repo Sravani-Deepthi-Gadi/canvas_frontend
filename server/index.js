@@ -1,4 +1,6 @@
-// server/index.js
+// server/index.js (updated)
+// Node + Express + Socket.IO server with per-user undo/redo and file persistence
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -14,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 // serve client statically
 app.use(express.static(path.join(__dirname, '..', 'client')));
 
-// in-memory store for rooms
+// in-memory store for rooms (with persistence support)
 const rooms = new Rooms();
 
 io.on('connection', (socket) => {
@@ -30,10 +32,16 @@ io.on('connection', (socket) => {
 
     rooms.addUser(roomId, { id: socket.id, meta: socket.meta });
 
+    // notify users list
     io.to(roomId).emit('users', rooms.getUsers(roomId));
 
+    // send full-state (serialized) to the new client
     const state = rooms.getState(roomId);
-    socket.emit('full-state', state);
+    // send ops and tombstones and stacks (clients use ops + tombstones)
+    socket.emit('full-state', {
+      ops: state.ops,
+      tombstones: state.tombstones
+    });
   });
 
   socket.on('cursor', (cursor) => {
@@ -58,49 +66,113 @@ io.on('connection', (socket) => {
     const roomId = socket.roomId;
     if (!roomId) return;
     const state = rooms.getState(roomId);
+
+    // ensure op has id
     if (!op.id) op.id = `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
+    // push op into history
     state.ops.push(op);
 
-    if(op.type === 'tombstone'){
-      state.tombstones = state.tombstones || [];
-      if(op.targetId) state.tombstones.push(op.targetId);
+    // If it's a normal stroke (or clear), attribute it for undo stacks
+    if (op.type === 'stroke' && op.meta && op.meta.origin) {
+      const origin = op.meta.origin;
+      state.userUndoStacks[origin] = state.userUndoStacks[origin] || [];
+      state.userUndoStacks[origin].push(op.id);
+      // clear redo stack for this user on new op
+      state.userRedoStacks[origin] = [];
     }
 
+    // If op is tombstone/untombstone, update tombstones array accordingly
+    if (op.type === 'tombstone' && op.targetId) {
+      state.tombstones = state.tombstones || [];
+      if (!state.tombstones.includes(op.targetId)) state.tombstones.push(op.targetId);
+    } else if (op.type === 'untombstone' && op.targetId) {
+      state.tombstones = state.tombstones || [];
+      state.tombstones = state.tombstones.filter(id => id !== op.targetId);
+    }
+
+    // Broadcast canonical op to all clients
     io.to(roomId).emit('op', op);
+
+    // persist the room state after mutation
+    rooms.save(roomId);
   });
 
   socket.on('undo', () => {
     const roomId = socket.roomId;
     if (!roomId) return;
-
     const state = rooms.getState(roomId);
-    for (let i = state.ops.length - 1; i >= 0; i--) {
-      const op = state.ops[i];
-      if (op.meta?.origin === socket.id) {
-        const tomb = {
-          type: 'tombstone',
-          id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-          targetId: op.id,
-          createdAt: Date.now()
-        };
-        state.tombstones = state.tombstones || [];
-        state.tombstones.push(op.id);
-        state.ops.push(tomb);
-        io.to(roomId).emit('op', tomb);
-        break;
-      }
+    const origin = socket.id;
+    state.userUndoStacks[origin] = state.userUndoStacks[origin] || [];
+    state.userRedoStacks[origin] = state.userRedoStacks[origin] || [];
+
+    const opId = state.userUndoStacks[origin].pop();
+    if (opId) {
+      // mark tombstone
+      state.tombstones = state.tombstones || [];
+      if (!state.tombstones.includes(opId)) state.tombstones.push(opId);
+
+      // push to redo stack
+      state.userRedoStacks[origin].push(opId);
+
+      const tomb = {
+        type: 'tombstone',
+        id: `tomb_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        targetId: opId,
+        createdAt: Date.now()
+      };
+      state.ops.push(tomb);
+      io.to(roomId).emit('op', tomb);
+
+      // persist
+      rooms.save(roomId);
+    } else {
+      // nothing to undo for this user
+      socket.emit('noop', { reason: 'nothing-to-undo' });
     }
   });
 
   socket.on('redo', () => {
-    // Not a full redo system in starter; clients may request full-state
-    socket.emit('request-full-state');
+    const roomId = socket.roomId;
+    if (!roomId) return;
+    const state = rooms.getState(roomId);
+    const origin = socket.id;
+    state.userRedoStacks[origin] = state.userRedoStacks[origin] || [];
+    state.userUndoStacks[origin] = state.userUndoStacks[origin] || [];
+
+    const opId = state.userRedoStacks[origin].pop();
+    if (opId) {
+      // remove tombstone if present
+      state.tombstones = state.tombstones || [];
+      state.tombstones = state.tombstones.filter(id => id !== opId);
+
+      // push back to undo stack
+      state.userUndoStacks[origin].push(opId);
+
+      const untomb = {
+        type: 'untombstone',
+        id: `untomb_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        targetId: opId,
+        createdAt: Date.now()
+      };
+      state.ops.push(untomb);
+      io.to(roomId).emit('op', untomb);
+
+      // persist
+      rooms.save(roomId);
+    } else {
+      socket.emit('noop', { reason: 'nothing-to-redo' });
+    }
   });
 
   socket.on('request-full-state', () => {
     const roomId = socket.roomId;
     if (!roomId) return;
-    socket.emit('full-state', rooms.getState(roomId));
+    const state = rooms.getState(roomId);
+    socket.emit('full-state', {
+      ops: state.ops,
+      tombstones: state.tombstones
+    });
   });
 
   socket.on('disconnect', () => {
