@@ -249,7 +249,7 @@ npm start
 
 ## Development Notes
 
-* All drawing logic uses raw **Canvas API** — no external libraries.
+* All drawing logic uses raw **Canvas API** no external libraries.
 * Partial stroke events throttled (~40ms).
 * Canvas scaled to device pixel ratio for crisp rendering.
 
