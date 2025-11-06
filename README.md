@@ -267,5 +267,62 @@ Approximately **12–16 hours** (development, testing, documentation, and deploy
 **MIT License** — feel free to reuse and extend for learning or demo purposes.
 
 ---
+Project Submission Summary
 
+Project Title: Real-Time Collaborative Drawing Canvas
+Author: Sravani Deepthi Gadi
+Technology Stack: Node.js, Express, Socket.IO, HTML5 Canvas, Vanilla JavaScript
+
+Live Demo:
+🔗 https://canvas-frontend-u8jd.onrender.com/
+
+GitHub Repository:
+🔗 https://github.com/Sravani-Deepthi-Gadi/canvas_frontend
+
+Features Implemented:
+
+Real-time synchronized multi-user drawing using WebSockets
+
+Brush and eraser tools with adjustable color and stroke width
+
+Room-based collaboration (isolated canvases per room)
+
+Undo (tombstone-based) and redo (untombstone prototype)
+
+Live user cursors and participant count
+
+Persistent room state saved as JSON
+
+Touch and mouse input support
+
+Technical Highlights:
+
+Efficient partial-stroke batching for low-latency streaming
+
+State replay using operation logs and tombstones
+
+Socket.IO-based event protocol for collaboration
+
+File-based persistence layer for demo reliability
+
+Modular architecture with separate client and server logic
+
+Testing Done:
+
+Verified locally (npm install && npm start)
+
+Tested multi-tab real-time collaboration and undo/redo consistency
+
+Deployed successfully on Render (cold-start delay noted)
+
+Time Invested: ~12–16 hours (design, coding, testing, deployment, and documentation)
+
+Future Enhancements:
+
+Full redo stack with untombstone logic
+
+Database persistence (MongoDB/Redis)
+
+Responsive UI and authentication for private rooms
+Demo Video:https://github.com/user-attachments/assets/0722a660-949b-4571-8574-e1b0f998126e
 
